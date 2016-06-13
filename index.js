@@ -1,6 +1,6 @@
 var restify = require('restify');
 var builder = require('botbuilder');
-var winston = require('winston');
+// var winston = require('winston');
 
 // Create bot and add dialogs
 var bot = new builder.BotConnectorBot({ appId: 'give_me_a_link', appSecret: 'ff98d9635e554e6f8026c4c8983d4cc7' });

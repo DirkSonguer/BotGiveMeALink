@@ -1,4 +1,5 @@
 /bin
 /obj
 /.ntvs_analysis.dat
+/._*
 node_modules
