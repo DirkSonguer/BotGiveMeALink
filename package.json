@@ -1,0 +1,13 @@
+{
+  "name": "give_me_a_link",
+  "version": "0.0.1",
+  "description": "This bot will give you a link based on bookmarks curated by me, Dirk Songuer.",
+  "main": "index.js",
+  "author": "Dirk Songuer <dirk.songuer@razorfish.de>",
+  "license": "Commercial",
+  "dependencies": {
+    "botbuilder": "^1.0.1",
+    "restify": "^4.1.0",
+    "winston": "^2.2.0"
+  }
+}
