@@ -1,13 +1,26 @@
 {
-  "name": "give_me_a_link",
-  "version": "0.0.1",
-  "description": "This bot will give you a link based on bookmarks curated by me, Dirk Songuer.",
-  "main": "index.js",
-  "author": "Dirk Songuer <dirk.songuer@razorfish.de>",
-  "license": "Commercial",
+  "name": "echobot",
+  "version": "1.0.0",
+  "description": "A sample bot for getting started with Bot Framework",
+  "main": "server.js",
+  "scripts": {
+    "test": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fuselabs/echobot.git"
+  },
+  "keywords": [
+    "botframework"
+  ],
+  "author": "Fuse Labs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fuselabs/echobot/issues"
+  },
+  "homepage": "https://github.com/fuselabs/echobot#readme",
   "dependencies": {
-    "botbuilder": "^1.0.1",
-    "restify": "^4.1.0",
-    "winston": "^2.2.0"
+    "botbuilder": "^0.6.5",
+    "restify": "^4.0.4"
   }
 }
