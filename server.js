@@ -23,18 +23,23 @@ var botConnectorOptions = {
 var bot = new builder.BotConnectorBot(botConnectorOptions);
 
 // add default route
-bot.add('/', [
-    function (session, args, next) {
-        if ((!session.searchQueries) || (session.searchQueries.length < 1)) {
-            session.beginDialog('/entersearchquery');
-        } else {
-            next();
+bot.add('/', new builder.CommandDialog()
+    .matches('^hey', builder.DialogAction.beginDialog('/newsearchquery'))
+    .matches('^quit', builder.DialogAction.endDialog())
+    .onDefault([
+        function (session, args, next) {
+            if ((!session.searchQueries) || (session.searchQueries.length < 1)) {
+                session.send('## Got no queries!');
+                session.beginDialog('/entersearchquery');
+            } else {
+                session.send('## Got some queries! ' + session.searchQueries.length);
+                next();
+            }
+        },
+        function (session, results) {
+            session.send('Ok, I\'m searching for ' + session.searchQueries[0]);
         }
-    },
-    function (session, results) {
-        session.send('Ok, I\'m searching for ' + session.searchQueries[0]);
-    }
-]);
+    ]));
 
 // user needs / wants to enter a search query
 bot.add('/entersearchquery', [
@@ -46,6 +51,15 @@ bot.add('/entersearchquery', [
         // add a new search query to the list
         session.searchQueries.push(results.response);
         session.endDialog();
+    }
+]);
+
+// start new search query
+bot.add('/newsearchquery', [
+    function (session) {
+        // add a new search query to the list
+        session.searchQueries = [];
+        session.beginDialog('/');
     }
 ]);
 
