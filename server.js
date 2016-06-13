@@ -10,7 +10,7 @@ var botConnectorOptions = {
 
 // Create bot
 var bot = new builder.BotConnectorBot(botConnectorOptions);
-helloBot.add('/', [
+bot.add('/', [
     function (session, args, next) {
         if (!session.userData.name) {
             session.beginDialog('/profile');
@@ -22,7 +22,7 @@ helloBot.add('/', [
         session.send('Hello %s!', session.userData.name);
     }
 ]);
-helloBot.add('/profile', [
+bot.add('/profile', [
     function (session) {
         builder.Prompts.text(session, 'Hi! What is your name?');
     },
