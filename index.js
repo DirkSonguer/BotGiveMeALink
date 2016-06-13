@@ -35,7 +35,7 @@ helloBot.add('/profile',  [
     }
 ]);
 
-server.use(helloBot.verifyBotFramework({ appId: 'you id', appSecret: 'your secret' }));
+server.use(helloBot.verifyBotFramework({ appId: 'give_me_a_link', appSecret: 'ff98d9635e554e6f8026c4c8983d4cc7' }));
 server.post('/v1/messages', helloBot.listen());
 
 server.listen(8080, function () {
