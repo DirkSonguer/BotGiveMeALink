@@ -1,26 +1,22 @@
 {
-  "name": "echobot",
+  "name": "givemealink",
   "version": "1.0.0",
-  "description": "A sample bot for getting started with Bot Framework",
+  "description": "This bot will give you a link based on bookmarks curated by me",
   "main": "server.js",
   "scripts": {
     "test": ""
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/fuselabs/echobot.git"
-  },
   "keywords": [
-    "botframework"
+    "botframework",
+    "pinboard.in"
   ],
-  "author": "Fuse Labs",
+  "author": "Dirk Songuer",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/fuselabs/echobot/issues"
-  },
-  "homepage": "https://github.com/fuselabs/echobot#readme",
+  "homepage": "https://github.com/dirksonguer",
   "dependencies": {
     "botbuilder": "^0.6.5",
-    "restify": "^4.0.4"
+    "node-pinboard": "^1.0.0",
+    "restify": "^4.0.4",
+    "winston": "^2.2.0"
   }
 }
