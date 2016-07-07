@@ -11,11 +11,11 @@ Author: Dirk Songuer (dirk@songuer.de)
 
 # How to use
 
-Step 1: Connect to the bot
-Step 2: Type a topic
-Step 3: Get matching link (or not)
-Step 4: Type "next" to go to next link
-Step 5: Go to step 2
+* Step 1: Connect to the bot
+* Step 2: Type a topic
+* Step 3: Get matching link (or not)
+* Step 4: Type "next" to go to next link
+* Step 5: Go to step 2
 
 # Helpful links:
 

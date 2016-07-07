@@ -29,7 +29,7 @@ var botConnectorOptions = {
 };
 
 // pinboard credentials, see above
-pinboardApiToken = process.env.PINBOARD_APITOKEN
+var pinboardApiToken = process.env.PINBOARD_APITOKEN
 var pinboard = new Pinboard(pinboardApiToken);
 
 // create bot based on connector options defined above
@@ -40,44 +40,30 @@ bot.on('BotAddedToConversation', function (listener) {
     winston.info('# Initiated a new bot conversation with id ' + listener.id);
 });
 
-// base command dialog
-bot.add('/', new builder.CommandDialog()
-    // default event caught by bot
-    .onDefault([
-        function (session, args, next) {
-            winston.info('# Default event caught');
+// create dialog based on LUIS app
+var dialog = new builder.LuisDialog('https://api.projectoxford.ai/luis/v1/application?id=' + process.env.LUIS_APP_ID + '&subscription-key=' + process.env.LUIS_SUBSCRIPTION_KEY);
+bot.add('/', dialog);
 
-            // clear old session data
-            session.userData = '';
+// LUIS identified a link request intent
+dialog.on('Link', [
+    function (session, args, next) {
+        winston.info('# Identified link request');
 
-            // routing to search event
-            session.beginDialog('/search');
-        }
-    ]));
+        // extract entity from intent
+        var task = builder.EntityRecognizer.findEntity(args.entities, 'Link');
 
-// search dialog
-bot.add('/search', [
-    function (session) {
-        winston.info('# Bot phase of the search dialog');
-
-        if (session.userData.searchResultText) {
-            winston.info('# Search result found, showing result');
-
-            // show the search result
-            builder.Prompts.text(session, session.userData.searchResultText);
+        // the link should be included in the Link entity
+        if (!task) {
+            // if none was given, apologise and ask again
+            next({});
         } else {
-            winston.info('# No search result found, showing initial promt');
-
-            // this is only used once in the beginning
-            builder.Prompts.text(session, 'Hi, there! I can show you a link if you give me a topic..');
+            // jump to next stage in dialog to show result
+            next({ response: task.entity });
         }
     },
     function (session, results) {
-        winston.info('# Answer phase of the search dialog');
-
-        if (results.response != 'next') {
-            winston.info('# Searching for ' + results.response);
-
+        winston.info('# Identified link request with given entity');
+        if (results.response) {
             // this will get all bookmarks stored in the pinboard account
             // we also add the tag filter to only receive matching entries
             pinboard.all({ tag: results.response }, function (err, res) {
@@ -88,47 +74,46 @@ bot.add('/search', [
                         winston.info('# Found ' + res.length + ' entries');
 
                         // storing search term in user data
+                        // this contains all search results and is used when the user requests another link from the results
                         session.userData.search = results.response;
 
                         // reset current index
+                        // this tracks which link the user currently sees
                         session.userData.searchResultIndex = 0;
 
                         // store complete result list
                         session.userData.searchResultList = res;
 
-                        // show first example
+                        // responding with first link result
                         resultLink = 'How about ';
                         resultLink += res[0].href + "\n";
                         resultLink += res[0].description + "\n";
                         resultLink += '(' + (session.userData.searchResultIndex + 1) + '/' + session.userData.searchResultList.length + ')';
-                        session.userData.searchResultText = resultLink;
+                        session.send(resultLink);
                     } else {
                         winston.info('# Got a response, but it does not seem like there are posts');
-                        session.userData.searchResultText = 'Hm, I don\'t think I have any link for that, sorry';
-
+                        session.send('Hm, I don\'t think I have any link for that, sorry');
                     }
                 } else {
                     // something went wrong
-                    session.userData.searchResultText = 'Oh, something went wrong (' + err + ')';
+                    winston.info('# Response did throw an error: ' + err);
+                    session.send('Oh, something went wrong (' + err + ')');
                 }
-
-                // route back to the search dialog start
-                // this will then display the result and be directly ready for input again
-                session.beginDialog('/search');
             });
         } else {
-            winston.info('# Selecting next result');
-
-            // route back to the search dialog start
-            // this will then display the result and be directly ready for input again
-            session.beginDialog('/next');
+            // no entity, hence no topic to search a link for
+            winston.info('# Did not get an entity for this intent');
+            session.send("Somehow I didn't get what you are looking for, sorry. Can you please try again?");
         }
     }
 ]);
 
-// show next entry
-bot.add('/next', [
-    function (session) {
+// LUIS identified intent for next link
+dialog.on('Next', [
+    function (session, args, next) {
+        next({});
+    },
+    function (session, results) {
         winston.info('# Selecting next result');
 
         // switch to next result
@@ -138,18 +123,43 @@ bot.add('/next', [
             session.userData.searchResultIndex = 0;
         }
 
-        // storing next result
+        // responding with next result
+        // this draws the result from the search results cached in the user session
         resultLink = 'How about ';
         resultLink += session.userData.searchResultList[session.userData.searchResultIndex].href + "\n";
         resultLink += session.userData.searchResultList[session.userData.searchResultIndex].description + "\n";
         resultLink += '(' + (session.userData.searchResultIndex + 1) + '/' + session.userData.searchResultList.length + ')';
-        session.userData.searchResultText = resultLink;
-
-        // route back to the search dialog start
-        // this will then display the result and be directly ready for input again
-        session.beginDialog('/search');
+        session.send(resultLink);
     }
 ]);
+
+// LUIS identified a salutation intent
+// just say hi
+dialog.on('Salutation', [
+    function (session, args, next) {
+        next({});
+    },
+    function (session, results) {
+        winston.info('# Salutation intent');
+        session.send("Oh, hi. Nice to meet you!", results.response);
+    }
+]);
+
+
+// LUIS identified a link request intent
+// just be nice
+dialog.on('Gratitude', [
+    function (session, args, next) {
+        next({});
+    },
+    function (session, results) {
+        winston.info('# Gratitude intent');
+        session.send("You're welcome! Glad to be of help.", results.response);
+    }
+]);
+
+// default action if no LUIS intent was found
+dialog.onDefault(builder.DialogAction.send("I'm sorry. I didn't understand. Can you please elaborate what you are looking for?"))
 
 // setup restify server
 var server = restify.createServer();

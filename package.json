@@ -1,6 +1,6 @@
 {
   "name": "givemealink",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "This bot will give you a link based on bookmarks curated by me",
   "main": "server.js",
   "scripts": {
@@ -14,7 +14,7 @@
   "license": "MIT",
   "homepage": "https://github.com/dirksonguer",
   "dependencies": {
-    "botbuilder": "^0.6.5",
+    "botbuilder": "^1.0.1",
     "node-pinboard": "^1.0.0",
     "restify": "^4.0.4",
     "winston": "^2.2.0"
